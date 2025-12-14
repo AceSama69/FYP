@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Athlete Stats Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Reuse design theme */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                  url('Background.png') center center / cover no-repeat;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .navbar {
+      background: rgba(0, 74, 173, 0.95);
+      color: white;
+      padding: 10px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      height: 45px;
+      width: auto;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .navbar nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .navbar nav a:hover {
+      color: #ffcc00;
+    }
+
+    /* Registration Form Styling */
+    .register-container {
+      margin-top: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .register-container h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #ffcc00;
+    }
+
+    .register-container input, 
+    .register-container select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .register-container input[type="submit"] {
+      background: #ffcc00;
+      color: #222;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .register-container input[type="submit"]:hover {
+      background: #ffaa00;
+      transform: scale(1.05);
+    }
+
+    .register-container p {
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .register-container a {
+      color: #ffcc00;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer {
+      background: #004aad;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      margin-top: auto;
+      width: 100%;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div style="display: flex; align-items: center;">
+      <img src="Logo.png" alt="Logo" class="logo">
+      <h2>Athlete Stats Tracker</h2>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <section class="register-container">
+    <h1>Create Your Account</h1>
+    <form action="#" method="post">
+      <input type="text" name="fullname" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email Address" required>
+      <input type="password" name="password" placeholder="Password" required>
+
+      <select name="role" required>
+        <option value="">Select Role</option>
+        <option value="coach">Coach</option>
+        <option value="athlete">Athlete</option>
+      </select>
+
+      <select name="sport" required>
+        <option value="">Select Sport</option>
+        <option value="basketball">Basketball</option>
+        <option value="football">Football</option>
+        <option value="volleyball">Volleyball</option>
+      </select>
+
+      <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </section>
+
+  <footer>
+    <p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Stats | Athlete Stats Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* Global background and font */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                  url('Background.png') center center / cover no-repeat;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(0, 74, 173, 0.95);
+      color: white;
+      padding: 10px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+      box-sizing: border-box;
+      backdrop-filter: blur(6px);
+    }
+
+    .logo {
+      height: 45px;
+      width: auto;
+      margin-right: 10px;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .navbar nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .navbar nav a:hover {
+      color: #ffcc00;
+    }
+
+    /* Center card form */
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+      max-width: 400px;
+      width: 90%;
+      margin: 120px auto;
+      text-align: left;
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .card h2 {
+      color: #ffcc00;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-top: 10px;
+      color: #fff;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 10px;
+      background: #ffcc00;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+      background: #ffaa00;
+    }
+
+    footer {
+      background: #004aad;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div style="display: flex; align-items: center;">
+      <img src="Logo.png" alt="Logo" class="logo">
+      <h1>Enter Athlete Stats</h1>
+    </div>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#" id="logout">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Form Card -->
+  <div class="card fade-in">
+    <h2>Enter Game Stats</h2>
+    <form id="statsForm">
+      <label>Sport</label>
+      <select id="sport" required>
+        <option>Basketball</option>
+        <option>Football</option>
+        <option>Volleyball</option>
+      </select>
+
+      <label>Score / Goals / Spikes</label>
+      <input type="number" id="score" required placeholder="Enter total points scored">
+
+      <label>Assists / Passes / Serves</label>
+      <input type="number" id="assist" required placeholder="Enter number of assists">
+
+      <label>Blocks / Saves / Tackles</label>
+      <input type="number" id="block" required placeholder="Enter number of blocks">
+
+      <button type="submit" class="btn-primary">Submit</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

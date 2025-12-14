@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Athlete Stats Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Reset and background setup */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                  url('Background.png') center center / cover no-repeat;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(0, 74, 173, 0.95);
+      color: white;
+      padding: 10px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+      box-sizing: border-box;
+      backdrop-filter: blur(6px);
+    }
+
+    .logo {
+      height: 45px;
+      width: auto;
+      margin-right: 10px;
+    }
+
+    .navbar h2, .navbar h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .navbar nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .navbar nav a:hover {
+      color: #ffcc00;
+    }
+
+    /* Dashboard layout */
+    main.dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      padding: 120px 40px 40px;
+      flex-grow: 1;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .card h2 {
+      color: #ffcc00;
+      margin-bottom: 20px;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+      font-size: 1rem;
+    }
+
+    .card ul li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    footer {
+      background: #004aad;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <header class="navbar sticky">
+    <div style="display: flex; align-items: center;">
+      <img src="Logo.png" alt="Logo" class="logo">
+      <h1>Athlete Dashboard</h1>
+    </div>
+    <nav>
+      <a href="stats.html">Enter Stats</a>
+      <a href="#" id="logout">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Dashboard Content -->
+  <main class="dashboard">
+    <div class="card">
+      <h2>Your Monthly Performance</h2>
+      <canvas id="performanceChart"></canvas>
+    </div>
+
+    <div class="card fade-in">
+      <h2>Summary</h2>
+      <ul>
+        <li><strong>Basketball:</strong> 3 Matches | 85% Accuracy</li>
+        <li><strong>Football:</strong> 5 Matches | 70% Pass Completion</li>
+        <li><strong>Volleyball:</strong> 4 Matches | 90% Spike Success</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p>
+  </footer>
+
+  <!-- Chart Script -->
+  <script>
+    const ctx = document.getElementById('performanceChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Basketball', 'Football', 'Volleyball'],
+        datasets: [{
+          label: 'Performance (%)',
+          data: [85, 70, 90],
+          backgroundColor: ['#ffcc00', '#ffaa00', '#ff8800'],
+          borderRadius: 8
+        }]
+      },
+      options: {
+        plugins: { legend: { labels: { color: 'white' } } },
+        scales: {
+          x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.2)' } },
+          y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.2)' } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

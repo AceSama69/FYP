@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athlete Stats Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* --- NAVBAR STYLING --- */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Poppins", sans-serif;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      background: rgba(0, 74, 173, 0.95);
+      color: white;
+      padding: 10px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      height: 45px;
+      width: auto;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .navbar h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .navbar nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+      padding: 8px 16px;
+      border-radius: 5px;
+    }
+
+    .navbar nav a:hover {
+      background: #ffcc00;
+      color: #222;
+    }
+
+    /* --- HERO SECTION STYLING --- */
+    .hero {
+      height: 100vh; /* full screen height */
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                  url('Background.png') center center / cover no-repeat;
+      /* 👆 Replace 'assets/background.jpg' with your image path */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 20px;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin-bottom: 25px;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .btn-primary {
+      background: #ffcc00;
+      color: #222;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s ease;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .btn-primary:hover {
+      background: #ffaa00;
+      transform: scale(1.05);
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      background: #004aad;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+      }
+
+      .navbar h2 {
+        font-size: 1.2rem;
+      }
+
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div style="display: flex; align-items: center;">
+      <img src="Logo.png" alt="Logo" class="logo">
+      <h2>Athlete Stats Tracker</h2>
+    </div>
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="register.html" class="btn">Get Started</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Track. Analyze. Win.</h1>
+    <p>Empower your performance with smart statistics tracking for Basketball, Football, and Volleyball.</p>
+    <a href="login.html" class="btn-primary">Start Tracking</a>
+  </section>
+
+  <footer>
+    <p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p>
+  </footer>
+</body>
+</html>
