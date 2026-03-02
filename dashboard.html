@@ -4,171 +4,476 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard | Athlete Stats Tracker</title>
-  <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* Reset and background setup */
+    * { box-sizing: border-box; }
     body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-                  url('Background.png') center center / cover no-repeat;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      margin: 0; padding: 0; font-family: "Poppins", sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.62),rgba(0,0,0,0.62)),
+                  url('Background.png') center/cover no-repeat fixed;
+      min-height: 100vh; color: white;
     }
-
-    /* Navbar */
     .navbar {
-      background: rgba(0, 74, 173, 0.95);
-      color: white;
-      padding: 10px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 10;
-      box-sizing: border-box;
-      backdrop-filter: blur(6px);
+      background: rgba(0,74,173,0.97); padding: 10px 35px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: fixed; top: 0; width: 100%; z-index: 200;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.4);
     }
-
-    .logo {
-      height: 45px;
-      width: auto;
-      margin-right: 10px;
+    .navbar-left { display: flex; align-items: center; gap: 12px; }
+    .logo { height: 42px; }
+    .navbar h2 { margin: 0; font-size: 1.25rem; }
+    .nav-links { display: flex; gap: 6px; align-items: center; }
+    .nav-links a {
+      color: white; text-decoration: none; padding: 7px 13px;
+      border-radius: 7px; font-size: 0.88rem; font-weight: 500; transition: 0.25s;
     }
-
-    .navbar h2, .navbar h1 {
-      margin: 0;
-      font-size: 1.4rem;
+    .nav-links a:hover { background: #ffcc00; color: #222; }
+    .page { padding: 90px 30px 40px; max-width: 1200px; margin: 0 auto; }
+    .welcome {
+      background: linear-gradient(135deg,rgba(0,74,173,0.8),rgba(0,120,255,0.6));
+      border-radius: 14px; padding: 22px 30px; margin-bottom: 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
-
-    .navbar nav a {
-      color: white;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: 0.3s;
+    .welcome h1 { margin: 0; font-size: 1.4rem; }
+    .welcome p  { margin: 4px 0 0; font-size: 0.85rem; opacity: 0.85; }
+    .role-badge {
+      background: #ffcc00; color: #222; padding: 6px 18px;
+      border-radius: 20px; font-weight: 700; font-size: 0.88rem;
     }
-
-    .navbar nav a:hover {
-      color: #ffcc00;
+    .pill-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+    .pill {
+      background: rgba(255,255,255,0.12); border-radius: 12px;
+      padding: 14px 22px; flex: 1; min-width: 130px; text-align: center;
+      border-left: 4px solid #ffcc00;
     }
-
-    /* Dashboard layout */
-    main.dashboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
-      padding: 120px 40px 40px;
-      flex-grow: 1;
-      box-sizing: border-box;
+    .pill-num   { font-size: 1.8rem; font-weight: 700; color: #ffcc00; }
+    .pill-label { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
+    .grid-2 {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; margin-bottom: 22px;
     }
-
+    @media(max-width:800px) { .grid-2 { grid-template-columns: 1fr; } }
     .card {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
-      animation: fadeIn 1s ease-in-out;
+      background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
+      border-radius: 14px; padding: 22px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25); margin-bottom: 22px;
+      animation: fadeUp 0.5s ease both;
     }
-
-    .card h2 {
-      color: #ffcc00;
-      margin-bottom: 20px;
+    .card-title {
+      font-size: 1rem; font-weight: 700; color: #ffcc00;
+      margin: 0 0 16px; display: flex; align-items: center; gap: 8px;
     }
-
-    .card ul {
-      list-style: none;
-      padding: 0;
-      font-size: 1rem;
+    .match-card {
+      background: rgba(255,255,255,0.07); border-radius: 12px;
+      padding: 16px 18px; margin-bottom: 12px;
+      border-left: 4px solid #ffcc00; transition: 0.25s;
     }
-
-    .card ul li {
-      margin-bottom: 10px;
-      line-height: 1.5;
+    .match-card:hover { background: rgba(255,255,255,0.13); }
+    .match-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .match-teams  { font-size: 1rem; font-weight: 700; }
+    .match-score  { font-size: 1.4rem; font-weight: 800; color: #ffcc00; letter-spacing: 2px; }
+    .match-meta   { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+    .match-summary{ font-size: 0.82rem; opacity: 0.72; margin-bottom: 10px; }
+    .match-actions{ display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      padding: 3px 10px; border-radius: 20px; font-size: 0.75rem;
+      font-weight: 700; color: white; display: inline-block;
     }
-
-    footer {
-      background: #004aad;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      font-size: 0.9rem;
-      width: 100%;
-      margin-top: auto;
+    .b-football   { background: #28a745; }
+    .b-basketball { background: #fd7e14; }
+    .b-volleyball { background: #6f42c1; }
+    .b-completed  { background: #20c997; }
+    .b-scheduled  { background: #0dcaf0; color: #111; }
+    .b-winner     { background: #ffd700; color: #333; }
+    .btn {
+      padding: 7px 14px; border: none; border-radius: 8px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: 0.25s;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .btn-yellow { background: #ffcc00; color: #222; }
+    .btn-yellow:hover { background: #ffaa00; }
+    .btn-blue   { background: rgba(0,74,173,0.9); color: white; }
+    .btn-blue:hover { background: #004aad; }
+    .btn-red    { background: rgba(220,53,69,0.85); color: white; }
+    .btn-red:hover { background: #dc3545; }
+    .btn-green  { background: rgba(32,201,151,0.85); color: white; }
+    .btn-green:hover { background: #20c997; }
+    .potm {
+      background: rgba(255,204,0,0.12); border: 1px solid rgba(255,204,0,0.3);
+      border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
     }
+    .potm-icon { font-size: 2rem; }
+    .potm-name { font-weight: 700; color: #ffcc00; }
+    .potm-sub  { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { background: rgba(0,74,173,0.6); color: white; padding: 9px 11px; text-align: left; }
+    td { padding: 9px 11px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.05); }
+    .no-data { text-align: center; opacity: 0.55; padding: 20px; font-style: italic; }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.78); z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #1a2a4a; border-radius: 14px; padding: 30px;
+      width: 90%; max-width: 460px; animation: fadeUp 0.3s ease;
+    }
+    .modal h3 { color: #ffcc00; margin: 0 0 18px; }
+    .modal label { display: block; font-size: 0.85rem; margin: 10px 0 3px; }
+    .modal input, .modal select {
+      width: 100%; padding: 9px; border: none; border-radius: 7px;
+      background: rgba(255,255,255,0.92); color: #222; font-size: 0.95rem;
+    }
+    .modal-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
-
 <body>
-  <!-- Navbar -->
-  <header class="navbar sticky">
-    <div style="display: flex; align-items: center;">
-      <img src="Logo.png" alt="Logo" class="logo">
-      <h1>Athlete Dashboard</h1>
-    </div>
-    <nav>
-      <a href="stats.html">Enter Stats</a>
-      <a href="#" id="logout">Logout</a>
-    </nav>
-  </header>
 
-  <!-- Dashboard Content -->
-  <main class="dashboard">
+<header class="navbar">
+  <div class="navbar-left">
+    <img src="Logo.png" alt="Logo" class="logo">
+    <h2>Athlete Stats Tracker</h2>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="view-stats.html">📊 All Matches</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="welcome">
+    <div>
+      <h1 id="welcomeText">Welcome!</h1>
+      <p id="welcomeSub"></p>
+    </div>
+    <span class="role-badge" id="roleBadge">…</span>
+  </div>
+
+  <div class="pill-row" id="pillRow"></div>
+
+  <!-- Charts + POTM row -->
+  <div class="grid-2" id="topGrid">
     <div class="card">
-      <h2>Your Monthly Performance</h2>
-      <canvas id="performanceChart"></canvas>
+      <div class="card-title" id="chartTitle">📊 Chart</div>
+      <canvas id="mainChart" height="210"></canvas>
     </div>
-
-    <div class="card fade-in">
-      <h2>Summary</h2>
-      <ul>
-        <li><strong>Basketball:</strong> 3 Matches | 85% Accuracy</li>
-        <li><strong>Football:</strong> 5 Matches | 70% Pass Completion</li>
-        <li><strong>Volleyball:</strong> 4 Matches | 90% Spike Success</li>
-      </ul>
+    <div class="card">
+      <div class="card-title">🏅 Player of the Match</div>
+      <div id="potmList"><p class="no-data">Loading…</p></div>
     </div>
-  </main>
+  </div>
 
-  <footer>
-    <p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p>
-  </footer>
+  <!-- Match Results -->
+  <div class="card">
+    <div class="card-title">⚽ Match Results <span id="matchSportLabel" style="font-size:0.8rem;color:rgba(255,255,255,0.55);font-weight:400;margin-left:6px;"></span></div>
+    <div id="matchList"><p class="no-data">Loading…</p></div>
+  </div>
 
-  <!-- Chart Script -->
-  <script>
-    const ctx = document.getElementById('performanceChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Basketball', 'Football', 'Volleyball'],
-        datasets: [{
-          label: 'Performance (%)',
-          data: [85, 70, 90],
-          backgroundColor: ['#ffcc00', '#ffaa00', '#ff8800'],
-          borderRadius: 8
-        }]
-      },
-      options: {
-        plugins: { legend: { labels: { color: 'white' } } },
-        scales: {
-          x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.2)' } },
-          y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.2)' } }
+  <!-- Personal Stats (Athlete only) -->
+  <div class="card" id="personalCard" style="display:none;">
+    <div class="card-title">🏃 My Personal Stats</div>
+    <div id="personalStats"><p class="no-data">Loading…</p></div>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>✏️ Edit Match</h3>
+    <input type="hidden" id="editMatchId">
+    <label>Team 1</label><input type="text" id="editTeam1">
+    <label>Team 2</label><input type="text" id="editTeam2">
+    <label>Score 1</label><input type="number" id="editScore1" min="0">
+    <label>Score 2</label><input type="number" id="editScore2" min="0">
+    <label>Status</label>
+    <select id="editStatus">
+      <option value="Completed">Completed</option>
+      <option value="Scheduled">Scheduled</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn btn-red"    onclick="closeModal()">Cancel</button>
+      <button class="btn btn-yellow" onclick="saveEdit()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+const { jsPDF } = window.jspdf;
+// API is declared in main.js
+
+const user = getUser();
+if (!user) window.location.href = "login.html";
+
+const isAdmin   = user.role === "admin";
+const userSport = user.sport;
+
+// Welcome
+document.getElementById("welcomeText").textContent = `Welcome, ${user.fullname}! 👋`;
+document.getElementById("welcomeSub").textContent  = isAdmin ? "Full admin access" : `Athlete · ${userSport}`;
+document.getElementById("roleBadge").textContent   = isAdmin ? "🔑 Admin" : "🏃 Athlete";
+document.getElementById("matchSportLabel").textContent = isAdmin ? "— All Sports" : `— ${userSport} only`;
+
+if (isAdmin) {
+  document.getElementById("chartTitle").textContent = "📊 Matches Per Sport";
+  document.getElementById("navLinks").insertAdjacentHTML("afterbegin",
+    '<a href="admin-enter-stats.html">➕ Enter Stats</a>');
+} else {
+  document.getElementById("chartTitle").textContent = "📈 My Performance Over Time";
+  document.getElementById("personalCard").style.display = "block";
+}
+
+// ── LOAD ALL ─────────────────────────────────────────
+async function loadDashboard() {
+  loadSummary();
+  loadMatches();
+  loadPotm();
+  if (!isAdmin) loadPersonalStats();
+}
+
+// ── SUMMARY PILLS + CHART ────────────────────────────
+async function loadSummary() {
+  try {
+    const res  = await fetch(`${API}/summary`);
+    const data = await res.json();
+    const pr   = document.getElementById("pillRow");
+
+    if (isAdmin) {
+      const total = data.reduce((s,d) => s + Number(d.total_matches), 0);
+      pr.innerHTML = `<div class="pill"><div class="pill-num">${total}</div><div class="pill-label">Total Matches</div></div>`
+        + data.map(d => `<div class="pill"><div class="pill-num">${d.total_matches}</div><div class="pill-label">${d.sport}</div></div>`).join("");
+
+      new Chart(document.getElementById("mainChart"), {
+        type: "bar",
+        data: {
+          labels: data.map(d=>d.sport),
+          datasets: [{ label:"Matches", data: data.map(d=>Number(d.total_matches)),
+            backgroundColor:["#ffcc00","#fd7e14","#6f42c1"], borderRadius:8 }]
+        },
+        options: {
+          plugins:{ legend:{ display:false } },
+          scales:{
+            x:{ ticks:{color:"white"}, grid:{color:"rgba(255,255,255,0.1)"} },
+            y:{ ticks:{color:"white"}, grid:{color:"rgba(255,255,255,0.1)"}, beginAtZero:true }
+          }
+        }
+      });
+    } else {
+      const mine = data.find(d => d.sport === userSport);
+      pr.innerHTML = `<div class="pill"><div class="pill-num">${mine ? mine.total_matches : 0}</div><div class="pill-label">${userSport} Matches</div></div>`;
+    }
+  } catch {}
+}
+
+// ── MATCHES ──────────────────────────────────────────
+// Store matches globally so buildCard can access summary/potm safely
+var matchesData = {};
+
+async function loadMatches() {
+  const el = document.getElementById("matchList");
+  try {
+    const url  = isAdmin ? `${API}/matches` : `${API}/matches?sport=${userSport}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (!data.length) { el.innerHTML='<p class="no-data">No matches found.</p>'; return; }
+    // Store matches by id
+    data.forEach(m => { matchesData[m.id] = m; });
+    el.innerHTML = data.map(m => buildCard(m)).join("");
+  } catch(e) {
+    console.error("loadMatches error:", e);
+    el.innerHTML='<p class="no-data" style="color:#ff6b6b;">❌ Cannot connect to server.</p>';
+  }
+}
+
+function buildCard(m) {
+  const sport   = m.sport || "";
+  const status  = m.status || "Completed";
+  const potm    = m.potm || "";
+  const summary = m.summary || "";
+  const date   = new Date(m.match_date).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+  let winner   = "";
+  if (status==="Completed") {
+    if      (m.score1 > m.score2) winner=`<span class="badge b-winner">🏆 ${m.team1} Wins</span>`;
+    else if (m.score2 > m.score1) winner=`<span class="badge b-winner">🏆 ${m.team2} Wins</span>`;
+    else                           winner=`<span class="badge b-winner">🤝 Draw</span>`;
+  }
+  const adminBtns = isAdmin ? `
+    <button class="btn btn-blue" onclick="openEdit(${m.id},'${m.team1}','${m.team2}',${m.score1},${m.score2},'${status}')">✏️ Edit</button>
+    <button class="btn btn-red"  onclick="deleteMatch(${m.id})">🗑 Delete</button>` : "";
+
+  return `<div class="match-card" id="match-${m.id}">
+    <div class="match-header">
+      <div>
+        <div class="match-teams">${m.team1} &nbsp;vs&nbsp; ${m.team2}</div>
+        <div class="match-meta" style="margin-top:6px;">
+          <span class="badge b-${sport.toLowerCase()}">${sport}</span>
+          <span class="badge ${status==="Completed"?"b-completed":"b-scheduled"}">${status}</span>
+          <span style="font-size:0.79rem;opacity:0.7;">📅 ${date}</span>
+          ${winner}
+        </div>
+      </div>
+      <div class="match-score">${m.score1} – ${m.score2}</div>
+    </div>
+    <div class="match-summary">📋 ${buildSummaryText(sport, summary, m.team1, m.team2, status)}</div>
+    ${potm ? `<div style="margin-top:6px;font-size:0.82rem;">🏅 <strong style="color:#ffcc00;">Player of the Match:</strong> ${potm}</div>` : ""}
+    <div class="match-actions" style="margin-top:10px;">
+      <button class="btn btn-green" onclick="downloadById(${m.id})">📄 Download Report</button>
+      ${adminBtns}
+    </div>
+  </div>`;
+}
+
+// ── PLAYER OF THE MATCH ──────────────────────────────
+async function loadPotm() {
+  const el = document.getElementById("potmList");
+  try {
+    const url = isAdmin ? `${API}/potm` : `${API}/potm?sport=${userSport}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.length) { el.innerHTML='<p class="no-data">No player stats yet.</p>'; return; }
+    el.innerHTML = data.slice(0,3).map((p,i) => `
+      <div class="potm">
+        <div class="potm-icon">${i===0?"🥇":i===1?"🥈":"🥉"}</div>
+        <div>
+          <div class="potm-name">${p.player_name}</div>
+          <div class="potm-sub">${p.sport} · Score: ${p.total_score} pts · ${new Date(p.match_date).toLocaleDateString("en-GB")}</div>
+        </div>
+      </div>`).join("");
+  } catch { el.innerHTML='<p class="no-data">Could not load.</p>'; }
+}
+
+// ── PERSONAL STATS + PERFORMANCE CHART (Athlete) ─────
+async function loadPersonalStats() {
+  const el = document.getElementById("personalStats");
+  try {
+    const res  = await fetch(`${API}/my-stats?player_name=${encodeURIComponent(user.fullname)}&sport=${encodeURIComponent(userSport)}`);
+    const data = await res.json();
+    if (!data.length) { el.innerHTML='<p class="no-data">No personal stats yet. Ask admin to record your match stats.</p>'; return; }
+
+    // Performance chart
+    const labels = [...data].reverse().map(p => new Date(p.match_date).toLocaleDateString("en-GB",{day:"2-digit",month:"short"}));
+    const scores = [...data].reverse().map(p => {
+      if (userSport==="Football")   return (p.goals||0)+(p.assists||0);
+      if (userSport==="Basketball") return (p.points||0)+(p.rebounds||0);
+      if (userSport==="Volleyball") return (p.kills||0)+(p.digs||0);
+      return 0;
+    });
+    new Chart(document.getElementById("mainChart"), {
+      type:"line",
+      data:{ labels, datasets:[{
+        label:"Performance", data:scores,
+        borderColor:"#ffcc00", backgroundColor:"rgba(255,204,0,0.15)",
+        fill:true, tension:0.4, pointBackgroundColor:"#ffcc00"
+      }]},
+      options:{
+        plugins:{ legend:{ labels:{ color:"white" } } },
+        scales:{
+          x:{ ticks:{color:"white"}, grid:{color:"rgba(255,255,255,0.1)"} },
+          y:{ ticks:{color:"white"}, grid:{color:"rgba(255,255,255,0.1)"}, beginAtZero:true }
         }
       }
     });
-  </script>
+
+    // Table
+    let header="", rows="";
+    if (userSport==="Football") {
+      header="<th>Date</th><th>Match</th><th>Goals</th><th>Assists</th>";
+      rows=data.map(p=>`<tr><td>${new Date(p.match_date).toLocaleDateString("en-GB")}</td><td>${p.team1} vs ${p.team2}</td><td>${p.goals}</td><td>${p.assists}</td></tr>`).join("");
+    } else if (userSport==="Basketball") {
+      header="<th>Date</th><th>Match</th><th>Points</th><th>Rebounds</th><th>Assists</th><th>Steals</th>";
+      rows=data.map(p=>`<tr><td>${new Date(p.match_date).toLocaleDateString("en-GB")}</td><td>${p.team1} vs ${p.team2}</td><td>${p.points}</td><td>${p.rebounds}</td><td>${p.assists}</td><td>${p.steals}</td></tr>`).join("");
+    } else if (userSport==="Volleyball") {
+      header="<th>Date</th><th>Match</th><th>Kills</th><th>Digs</th><th>Aces</th>";
+      rows=data.map(p=>`<tr><td>${new Date(p.match_date).toLocaleDateString("en-GB")}</td><td>${p.team1} vs ${p.team2}</td><td>${p.kills}</td><td>${p.digs}</td><td>${p.service_aces}</td></tr>`).join("");
+    }
+    el.innerHTML=`<table><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
+  } catch { el.innerHTML='<p class="no-data">Could not load personal stats.</p>'; }
+}
+
+// ── PDF DOWNLOAD ─────────────────────────────────────
+function downloadPDF(id,team1,team2,score1,score2,sport,date,status) {
+  const doc = new jsPDF();
+  doc.setFillColor(0,74,173); doc.rect(0,0,210,35,"F");
+  doc.setTextColor(255,204,0); doc.setFontSize(20); doc.setFont("helvetica","bold");
+  doc.text("Athlete Stats Tracker",105,15,{align:"center"});
+  doc.setFontSize(11); doc.setTextColor(255,255,255);
+  doc.text("Official Match Report",105,26,{align:"center"});
+  doc.setTextColor(30,30,30); doc.setFontSize(15); doc.setFont("helvetica","bold");
+  doc.text(`${team1}  vs  ${team2}`,105,50,{align:"center"});
+  doc.setFontSize(30); doc.setTextColor(0,74,173);
+  doc.text(`${score1}  –  ${score2}`,105,66,{align:"center"});
+  doc.setFontSize(10); doc.setTextColor(70,70,70); doc.setFont("helvetica","normal");
+  doc.text(`Sport: ${sport}`,30,80);
+  doc.text(`Date: ${date}`,30,88);
+  doc.text(`Status: ${status}`,30,96);
+  doc.setFont("helvetica","bold"); doc.setTextColor(0,74,173);
+  let wt="";
+  if(status==="Completed"){
+    if(score1>score2) wt=`Winner: ${team1}`;
+    else if(score2>score1) wt=`Winner: ${team2}`;
+    else wt="Result: Draw";
+  } else { wt="Match not yet played"; }
+  doc.text(wt,30,108);
+  doc.setFont("helvetica","normal"); doc.setTextColor(50,50,50); doc.setFontSize(10);
+  const summary = status==="Completed"
+    ? `${team1} scored ${score1} goal(s) and ${team2} scored ${score2} goal(s). Total goals: ${Number(score1)+Number(score2)}.`
+    : "This match has been scheduled and is yet to be played.";
+  doc.text("Match Summary:",30,122);
+  doc.text(doc.splitTextToSize(summary,150),30,130);
+  doc.setFillColor(0,74,173); doc.rect(0,280,210,17,"F");
+  doc.setTextColor(255,255,255); doc.setFontSize(9);
+  doc.text("© 2025 Athlete Stats Tracker | Auto-Generated Report",105,290,{align:"center"});
+  doc.save(`Match_${team1}_vs_${team2}.pdf`);
+}
+
+// ── EDIT MATCH ────────────────────────────────────────
+function openEdit(id,team1,team2,score1,score2,status){
+  document.getElementById("editMatchId").value=id;
+  document.getElementById("editTeam1").value=team1;
+  document.getElementById("editTeam2").value=team2;
+  document.getElementById("editScore1").value=score1;
+  document.getElementById("editScore2").value=score2;
+  document.getElementById("editStatus").value=status;
+  document.getElementById("editModal").classList.add("open");
+}
+function closeModal(){ document.getElementById("editModal").classList.remove("open"); }
+async function saveEdit(){
+  const id=document.getElementById("editMatchId").value;
+  try{
+    const res=await fetch(`${API}/matches/${id}`,{
+      method:"PUT", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        team1:document.getElementById("editTeam1").value,
+        team2:document.getElementById("editTeam2").value,
+        score1:Number(document.getElementById("editScore1").value),
+        score2:Number(document.getElementById("editScore2").value),
+        status:document.getElementById("editStatus").value
+      })
+    });
+    if(res.ok){ closeModal(); loadMatches(); }
+    else alert("Could not save changes.");
+  } catch { alert("Server error."); }
+}
+
+// ── DELETE ────────────────────────────────────────────
+async function deleteMatch(id){
+  if(!confirm("Delete this match?")) return;
+  try{
+    const res=await fetch(`${API}/matches/${id}`,{method:"DELETE"});
+    if(res.ok) document.getElementById(`match-${id}`)?.remove();
+    else alert("Could not delete.");
+  } catch { alert("Server error."); }
+}
+
+loadDashboard();
+</script>
 </body>
 </html>

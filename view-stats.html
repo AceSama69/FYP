@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Stats | Athlete Stats Tracker</title>
+  <style>
+    body {
+      margin: 0; font-family: "Poppins", sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
+                  url("Background.png") center/cover no-repeat;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: rgba(0,74,173,0.95); padding: 10px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: fixed; top: 0; width: 100%; box-sizing: border-box; z-index: 100; color: white;
+    }
+    .logo { height: 45px; margin-right: 10px; }
+    .navbar h2 { margin: 0; font-size: 1.3rem; }
+    nav a {
+      color: white; text-decoration: none; padding: 7px 14px;
+      border-radius: 6px; transition: 0.3s; margin-left: 8px; font-weight: 500;
+    }
+    nav a:hover { background: #ffcc00; color: #222; }
+
+    .page-wrapper { padding: 110px 20px 40px; display: flex; flex-direction: column; align-items: center; }
+
+    .page-title { color: white; font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
+    .sport-label { color: #ffcc00; font-size: 0.9rem; margin-bottom: 20px; }
+
+    /* Filter bar — admin only */
+    .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+    .filter-btn {
+      padding: 8px 18px; border: none; border-radius: 20px;
+      cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.3s;
+      background: rgba(255,255,255,0.2); color: white;
+    }
+    .filter-btn.active, .filter-btn:hover { background: #ffcc00; color: #222; }
+
+    .stats-card {
+      background: white; width: 100%; max-width: 800px; padding: 30px;
+      border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    .stats-card h2 { text-align: center; color: #004aad; margin-bottom: 20px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: #004aad; color: white; padding: 10px 12px; text-align: left; }
+    td { padding: 10px 12px; border-bottom: 1px solid #eee; color: #333; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f0f5ff; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 12px;
+      font-size: 0.8rem; font-weight: 600; color: white;
+    }
+    .badge-football   { background: #28a745; }
+    .badge-basketball { background: #fd7e14; }
+    .badge-volleyball { background: #6f42c1; }
+
+    .btn-delete {
+      background: #dc3545; color: white; border: none; padding: 5px 12px;
+      border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: 0.3s;
+    }
+    .btn-delete:hover { background: #b02a37; }
+
+    .no-data { text-align: center; color: #999; padding: 30px; font-size: 1rem; }
+
+    footer {
+      background: #004aad; color: white; text-align: center;
+      padding: 14px; font-size: 0.85rem; margin-top: 30px;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div style="display:flex;align-items:center;">
+    <img src="Logo.png" class="logo" alt="Logo">
+    <h2>Athlete Stats Tracker</h2>
+  </div>
+  <nav>
+    <a href="dashboard.html">🏠 Dashboard</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
+  </nav>
+</header>
+
+<div class="page-wrapper">
+  <h1 class="page-title">📊 Match Statistics</h1>
+  <p class="sport-label" id="sportLabel"></p>
+
+  <!-- Filter bar shown to Admin only -->
+  <div class="filter-bar" id="filterBar" style="display:none;">
+    <button class="filter-btn active" onclick="loadMatches('all', this)">All Sports</button>
+    <button class="filter-btn" onclick="loadMatches('Football', this)">⚽ Football</button>
+    <button class="filter-btn" onclick="loadMatches('Basketball', this)">🏀 Basketball</button>
+    <button class="filter-btn" onclick="loadMatches('Volleyball', this)">🏐 Volleyball</button>
+  </div>
+
+  <div class="stats-card">
+    <div id="statsDisplay"><p class="no-data">⏳ Loading…</p></div>
+  </div>
+</div>
+
+<footer><p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p></footer>
+
+<script src="main.js"></script>
+<script>
+  const user = getUser();
+  if (!user) window.location.href = "login.html";
+
+  // Admin sees filter bar; Athlete sees their sport only
+  if (user.role === "admin") {
+    document.getElementById("filterBar").style.display  = "flex";
+    document.getElementById("sportLabel").textContent   = "Showing all sports";
+    loadMatches("all", null);
+  } else {
+    document.getElementById("sportLabel").textContent = `Showing ${user.sport} matches only`;
+    loadMatches(user.sport, null);
+  }
+
+  async function loadMatches(sport, btn) {
+    if (btn) {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    const container = document.getElementById("statsDisplay");
+    container.innerHTML = '<p class="no-data">⏳ Loading…</p>';
+
+    try {
+      const url = sport === "all"
+        ? "http://localhost:5000/matches"
+        : `http://localhost:5000/matches?sport=${sport}`;
+
+      const res  = await fetch(url);
+      const data = await res.json();
+
+      if (!data.length) {
+        container.innerHTML = '<p class="no-data">No matches found.</p>'; return;
+      }
+
+      // Show delete column only for admin
+      const isAdmin = user.role === "admin";
+
+      let html = `<table><thead><tr>
+        <th>#</th><th>Sport</th><th>Team 1</th>
+        <th>Score</th><th>Team 2</th><th>Date</th>
+        ${isAdmin ? "<th>Action</th>" : ""}
+      </tr></thead><tbody>`;
+
+      data.forEach((m, i) => {
+        const badge = `badge-${m.sport.toLowerCase()}`;
+        const date  = new Date(m.match_date).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+        html += `<tr id="row-${m.id}">
+          <td>${i+1}</td>
+          <td><span class="badge ${badge}">${m.sport}</span></td>
+          <td>${m.team1}</td>
+          <td><strong>${m.score1} – ${m.score2}</strong></td>
+          <td>${m.team2}</td>
+          <td>${date}</td>
+          ${isAdmin ? `<td><button class="btn-delete" onclick="deleteMatch(${m.id})">🗑 Delete</button></td>` : ""}
+        </tr>`;
+      });
+
+      html += "</tbody></table>";
+      container.innerHTML = html;
+
+    } catch {
+      container.innerHTML = '<p class="no-data" style="color:red;">❌ Cannot connect to server. Make sure backend is running on port 5000.</p>';
+    }
+  }
+
+  async function deleteMatch(id) {
+    if (!confirm("Delete this match?")) return;
+    try {
+      const res = await fetch(`http://localhost:5000/matches/${id}`, { method: "DELETE" });
+      if (res.ok) document.getElementById(`row-${id}`)?.remove();
+      else alert("Could not delete match.");
+    } catch { alert("Server error."); }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Stats | Athlete Stats Tracker</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Arial, sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)),
+                  url("Background.png") center/cover no-repeat fixed;
+      min-height: 100vh; color: white;
+    }
+    .navbar {
+      background: rgba(0,74,173,0.95); padding: 10px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: fixed; top: 0; width: 100%; z-index: 100;
+    }
+    .navbar-left { display: flex; align-items: center; gap: 12px; }
+    .logo { height: 42px; }
+    .nav-links a { color: white; text-decoration: none; padding: 7px 13px; border-radius: 7px; margin-left: 6px; }
+    .nav-links a:hover { background: #ffcc00; color: #222; }
+    .content { padding: 100px 20px 50px; display: flex; justify-content: center; }
+    .card {
+      background: rgba(255,255,255,0.1); backdrop-filter: blur(14px);
+      border-radius: 16px; padding: 35px; width: 100%; max-width: 720px;
+    }
+    .card h2 { text-align: center; margin-bottom: 28px; color: #ffcc00; }
+    .section-label {
+      font-size: 0.88rem; font-weight: 700; color: #ffcc00;
+      text-transform: uppercase; letter-spacing: 1px;
+      border-bottom: 1px solid rgba(255,204,0,0.3);
+      padding-bottom: 7px; margin: 24px 0 14px;
+    }
+    label { display: block; font-size: 0.88rem; margin-bottom: 5px; margin-top: 12px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px; border: none; border-radius: 8px;
+      background: rgba(255,255,255,0.92); color: #222; font-size: 0.92rem; font-family: Arial;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+
+    /* SPORT SECTIONS - only active one shows */
+    .sport-section { display: none; }
+    .sport-section.active { display: block; }
+
+    .player-block {
+      background: rgba(255,255,255,0.07); border-radius: 10px;
+      padding: 16px; margin-top: 14px; border: 1px solid rgba(255,255,255,0.12);
+    }
+    .player-block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .player-block-header h4 { margin: 0; color: #ffcc00; }
+    .btn-remove { background: rgba(220,53,69,0.75); color: white; border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; }
+    .btn-add { width: 100%; margin-top: 12px; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: 1px dashed rgba(255,255,255,0.35); border-radius: 8px; cursor: pointer; }
+    .potm-box { background: rgba(255,204,0,0.1); border: 1px solid rgba(255,204,0,0.3); border-radius: 10px; padding: 16px; margin-top: 14px; }
+    .potm-box label { color: #ffcc00; font-weight: 700; }
+    .btn-submit { width: 100%; margin-top: 28px; padding: 14px; background: #ffcc00; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; color: #222; }
+    .btn-submit:hover { background: #ffaa00; }
+    .msg { display: none; margin-top: 16px; text-align: center; font-weight: 600; padding: 12px; border-radius: 9px; }
+    .msg.success { background: rgba(0,200,100,0.2); color: #00ff88; }
+    .msg.error   { background: rgba(220,53,69,0.2); color: #ff6b6b; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-left">
+    <img src="Logo.png" alt="Logo" class="logo">
+    <h2 style="margin:0;font-size:1.25rem;">Athlete Stats Tracker</h2>
+  </div>
+  <div class="nav-links">
+    <a href="dashboard.html">🏠 Dashboard</a>
+    <a href="view-stats.html">📊 View Stats</a>
+    <a href="#" onclick="localStorage.clear();sessionStorage.clear();window.location.href='login.html'">🚪 Logout</a>
+  </div>
+</header>
+
+<div class="content">
+  <div class="card">
+    <h2>➕ Enter Match & Player Stats</h2>
+
+    <div class="section-label">Step 1 — Match Information</div>
+
+    <label>Sport</label>
+    <select id="sport" onchange="switchSport()">
+      <option value="Football">⚽ Football</option>
+      <option value="Basketball">🏀 Basketball</option>
+      <option value="Volleyball">🏐 Volleyball</option>
+    </select>
+
+    <div class="grid-2">
+      <div><label>Team 1 Name</label><input type="text" id="team1" placeholder="e.g. Lions FC"></div>
+      <div><label>Team 2 Name</label><input type="text" id="team2" placeholder="e.g. Tigers FC"></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Team 1 Final Score</label><input type="number" id="score1" min="0" placeholder="0"></div>
+      <div><label>Team 2 Final Score</label><input type="number" id="score2" min="0" placeholder="0"></div>
+    </div>
+    <div class="grid-2">
+      <div><label>Match Date</label><input type="date" id="match_date"></div>
+      <div><label>Status</label>
+        <select id="status">
+          <option value="Completed">Completed</option>
+          <option value="Scheduled">Scheduled</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ═══ FOOTBALL ═══ -->
+    <div id="section-Football" class="sport-section active">
+      <div class="section-label">⚽ Football — Goal Details</div>
+      <label>Goals by Minute (one per line, e.g. "23' - John, Lions FC")</label>
+      <textarea id="footballGoals" placeholder="23' - John Smith, Lions FC&#10;67' - Carlos, Tigers FC"></textarea>
+      <div class="grid-2" style="margin-top:12px;">
+        <div>
+          <label>Extra Time Played?</label>
+          <select id="extraTime">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+        <div>
+          <label>Penalties?</label>
+          <select id="penalties" onchange="togglePenalties()">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+      </div>
+      <div id="penaltyRow" style="display:none; margin-top:10px;">
+        <div class="grid-2">
+          <div><label>Team 1 Penalty Score</label><input type="number" id="penScore1" min="0" placeholder="0"></div>
+          <div><label>Team 2 Penalty Score</label><input type="number" id="penScore2" min="0" placeholder="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ BASKETBALL ═══ -->
+    <div id="section-Basketball" class="sport-section">
+      <div class="section-label">🏀 Basketball — Quarter by Quarter Scores</div>
+      <p style="font-size:0.82rem;opacity:0.65;margin-bottom:12px;">Enter points scored each quarter for both teams</p>
+      <div style="margin-bottom:6px;font-size:0.85rem;font-weight:700;color:#ffcc00;">Team 1 Quarters</div>
+      <div class="grid-4">
+        <div><label>Q1</label><input type="number" id="bq1t1" min="0" placeholder="0"></div>
+        <div><label>Q2</label><input type="number" id="bq2t1" min="0" placeholder="0"></div>
+        <div><label>Q3</label><input type="number" id="bq3t1" min="0" placeholder="0"></div>
+        <div><label>Q4</label><input type="number" id="bq4t1" min="0" placeholder="0"></div>
+      </div>
+      <div style="margin:10px 0 6px;font-size:0.85rem;font-weight:700;color:#ffcc00;">Team 2 Quarters</div>
+      <div class="grid-4">
+        <div><label>Q1</label><input type="number" id="bq1t2" min="0" placeholder="0"></div>
+        <div><label>Q2</label><input type="number" id="bq2t2" min="0" placeholder="0"></div>
+        <div><label>Q3</label><input type="number" id="bq3t2" min="0" placeholder="0"></div>
+        <div><label>Q4</label><input type="number" id="bq4t2" min="0" placeholder="0"></div>
+      </div>
+      <div style="margin-top:12px;">
+        <label style="color:#ffcc00;font-weight:700;">Overtime (leave blank if none)</label>
+        <div class="grid-2">
+          <div><label>Team 1 OT</label><input type="number" id="botT1" min="0" placeholder="0"></div>
+          <div><label>Team 2 OT</label><input type="number" id="botT2" min="0" placeholder="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VOLLEYBALL ═══ -->
+    <div id="section-Volleyball" class="sport-section">
+      <div class="section-label">🏐 Volleyball — Set by Set Results</div>
+      <p style="font-size:0.82rem;opacity:0.65;margin-bottom:12px;">Enter score for each set played</p>
+      <div id="volleySets"></div>
+      <button class="btn-add" onclick="addSet()" style="margin-top:10px;">➕ Add Another Set</button>
+    </div>
+
+    <!-- STEP 2 PLAYERS -->
+    <div class="section-label">Step 2 — Player Statistics</div>
+    <div id="playersContainer"></div>
+    <button class="btn-add" onclick="addPlayer()">➕ Add Another Player</button>
+
+    <!-- STEP 3 POTM -->
+    <div class="section-label">Step 3 — Player of the Match</div>
+    <div class="potm-box">
+      <label>🏅 Select Player of the Match</label>
+      <select id="potmSelect" style="margin-top:8px;">
+        <option value="">-- Add players above first --</option>
+      </select>
+    </div>
+
+    <button class="btn-submit" onclick="submitAll()">💾 Save Match & Stats</button>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+
+<script>
+  const API = "http://localhost:5000";
+  let playerCount = 0;
+  let setCount    = 0;
+
+  const sportStats = {
+    Football:   [{label:"Goals",stat:"goals"},{label:"Assists",stat:"assists"},{label:"Saves",stat:"saves"},{label:"Yellow Cards",stat:"yellow_cards"},{label:"Red Cards",stat:"red_cards"}],
+    Basketball: [{label:"Points",stat:"points"},{label:"Rebounds",stat:"rebounds"},{label:"Assists",stat:"assists"},{label:"Steals",stat:"steals"},{label:"Blocks",stat:"blocks"}],
+    Volleyball: [{label:"Kills",stat:"kills"},{label:"Digs",stat:"digs"},{label:"Service Aces",stat:"service_aces"},{label:"Blocks",stat:"blocks"}]
+  };
+
+  // ── Switch sport section ─────────────────────────
+  function switchSport() {
+    var sport = document.getElementById("sport").value;
+    document.querySelectorAll(".sport-section").forEach(function(el) {
+      el.classList.remove("active");
+    });
+    document.getElementById("section-" + sport).classList.add("active");
+    document.getElementById("playersContainer").innerHTML = "";
+    playerCount = 0;
+    addPlayer();
+    updatePotm();
+  }
+
+  // ── Penalties toggle ─────────────────────────────
+  function togglePenalties() {
+    var v = document.getElementById("penalties").value;
+    document.getElementById("penaltyRow").style.display = v === "Yes" ? "block" : "none";
+  }
+
+  // ── Add volleyball set ───────────────────────────
+  function addSet() {
+    setCount++;
+    var d = document.createElement("div");
+    d.className = "grid-2";
+    d.style.marginBottom = "8px";
+    d.innerHTML =
+      '<div><label>Set ' + setCount + ' — Team 1</label><input type="number" min="0" placeholder="0" id="vs' + setCount + 't1"></div>' +
+      '<div><label>Set ' + setCount + ' — Team 2</label><input type="number" min="0" placeholder="0" id="vs' + setCount + 't2"></div>';
+    document.getElementById("volleySets").appendChild(d);
+  }
+
+  // ── Add player block ─────────────────────────────
+  function addPlayer() {
+    playerCount++;
+    var sport  = document.getElementById("sport").value;
+    var fields = sportStats[sport];
+    var fhtml  = "";
+    fields.forEach(function(f) {
+      fhtml += '<div><label>' + f.label + '</label><input type="number" min="0" placeholder="0" data-stat="' + f.stat + '"></div>';
+    });
+    var block = document.createElement("div");
+    block.className = "player-block";
+    block.id = "pb-" + playerCount;
+    var num = playerCount;
+    block.innerHTML =
+      '<div class="player-block-header"><h4>Player ' + num + '</h4><button class="btn-remove" onclick="document.getElementById(\'pb-' + num + '\').remove();updatePotm()">✕ Remove</button></div>' +
+      '<label>Player Name</label>' +
+      '<input type="text" class="pname" placeholder="e.g. John Smith" oninput="updatePotm()">' +
+      '<div class="grid-3" style="margin-top:10px;">' + fhtml + '</div>';
+    document.getElementById("playersContainer").appendChild(block);
+    updatePotm();
+  }
+
+  // ── Update POTM dropdown ─────────────────────────
+  function updatePotm() {
+    var sel   = document.getElementById("potmSelect");
+    var prev  = sel.value;
+    var names = [];
+    document.querySelectorAll(".pname").forEach(function(i) {
+      if (i.value.trim()) names.push(i.value.trim());
+    });
+    if (names.length === 0) {
+      sel.innerHTML = '<option value="">-- Add players above first --</option>';
+    } else {
+      sel.innerHTML = '<option value="">-- Select Player of the Match --</option>';
+      names.forEach(function(n) {
+        sel.innerHTML += '<option value="' + n + '"' + (n === prev ? " selected" : "") + '>' + n + '</option>';
+      });
+    }
+  }
+
+  // ── Build summary JSON ───────────────────────────
+  function buildSummary() {
+    var sport = document.getElementById("sport").value;
+    if (sport === "Football") {
+      var goals = document.getElementById("footballGoals").value.trim();
+      var et    = document.getElementById("extraTime").value;
+      var pen   = document.getElementById("penalties").value;
+      var ps1   = document.getElementById("penScore1") ? document.getElementById("penScore1").value : "0";
+      var ps2   = document.getElementById("penScore2") ? document.getElementById("penScore2").value : "0";
+      return JSON.stringify({type:"football", goals:goals, extraTime:et, penalties:pen, penScore1:ps1, penScore2:ps2});
+    }
+    if (sport === "Basketball") {
+      var quarters = [];
+      for (var q = 1; q <= 4; q++) {
+        quarters.push({
+          q: q,
+          t1: Number(document.getElementById("bq"+q+"t1").value) || 0,
+          t2: Number(document.getElementById("bq"+q+"t2").value) || 0
+        });
+      }
+      var ot1 = Number(document.getElementById("botT1").value) || 0;
+      var ot2 = Number(document.getElementById("botT2").value) || 0;
+      return JSON.stringify({type:"basketball", quarters:quarters, overtime: (ot1||ot2) ? {t1:ot1,t2:ot2} : null});
+    }
+    if (sport === "Volleyball") {
+      var sets = [];
+      for (var i = 1; i <= setCount; i++) {
+        var el1 = document.getElementById("vs"+i+"t1");
+        var el2 = document.getElementById("vs"+i+"t2");
+        if (el1 && el2) {
+          var v1 = Number(el1.value) || 0;
+          var v2 = Number(el2.value) || 0;
+          if (v1 || v2) sets.push({set:i, t1:v1, t2:v2});
+        }
+      }
+      return JSON.stringify({type:"volleyball", sets:sets});
+    }
+    return "";
+  }
+
+  // ── Submit ───────────────────────────────────────
+  async function submitAll() {
+    var sport  = document.getElementById("sport").value;
+    var team1  = document.getElementById("team1").value.trim();
+    var team2  = document.getElementById("team2").value.trim();
+    var score1 = document.getElementById("score1").value;
+    var score2 = document.getElementById("score2").value;
+    var date   = document.getElementById("match_date").value;
+    var status = document.getElementById("status").value;
+    var potm   = document.getElementById("potmSelect").value;
+
+    if (!team1 || !team2 || score1 === "" || score2 === "" || !date) {
+      showMsg("❌ Please fill in all match fields.", "error"); return;
+    }
+
+    var summary = buildSummary();
+
+    try {
+      var r1 = await fetch(API + "/add-match", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({sport, team1, team2, score1, score2, match_date:date, status, summary, potm})
+      });
+      var d1 = await r1.json();
+      if (!r1.ok) { showMsg("❌ " + (d1.error || "Failed to save match."), "error"); return; }
+
+      var matchId = d1.matchId;
+      var blocks  = document.querySelectorAll(".player-block");
+      for (var b of blocks) {
+        var name = b.querySelector(".pname").value.trim();
+        if (!name) continue;
+        var pd = {match_id: matchId, player_name: name, sport: sport};
+        b.querySelectorAll("[data-stat]").forEach(function(inp) {
+          pd[inp.dataset.stat] = Number(inp.value) || 0;
+        });
+        await fetch(API + "/add-player", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(pd)
+        });
+      }
+
+      showMsg("✅ Match and player stats saved!", "success");
+      setTimeout(function() { window.location.href = "dashboard.html"; }, 1500);
+    } catch(e) {
+      showMsg("❌ Cannot connect to server.", "error");
+    }
+  }
+
+  function showMsg(text, type) {
+    var el = document.getElementById("msg");
+    el.textContent = text;
+    el.className = "msg " + type;
+    el.style.display = "block";
+  }
+
+  // Init
+  addSet(); addSet(); addSet();
+  addPlayer();
+</script>
+</body>
+</html>

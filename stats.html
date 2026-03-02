@@ -154,31 +154,57 @@
   <!-- Form Card -->
   <div class="card fade-in">
     <h2>Enter Game Stats</h2>
-    <form id="statsForm">
-      <label>Sport</label>
-      <select id="sport" required>
-        <option>Basketball</option>
-        <option>Football</option>
-        <option>Volleyball</option>
-      </select>
+  <form id="statsForm">
 
-      <label>Score / Goals / Spikes</label>
-      <input type="number" id="score" required placeholder="Enter total points scored">
+  <select id="sport" required>
+    <option value="">Select Sport</option>
+    <option value="Football">Football</option>
+    <option value="Basketball">Basketball</option>
+    <option value="Volleyball">Volleyball</option>
+  </select>
 
-      <label>Assists / Passes / Serves</label>
-      <input type="number" id="assist" required placeholder="Enter number of assists">
+  <input type="text" id="team1" placeholder="Team 1" required>
+  <input type="text" id="team2" placeholder="Team 2" required>
+  <input type="number" id="score1" placeholder="Score 1" required>
+  <input type="number" id="score2" placeholder="Score 2" required>
+  <input type="date" id="match_date" required>
 
-      <label>Blocks / Saves / Tackles</label>
-      <input type="number" id="block" required placeholder="Enter number of blocks">
+  <button type="submit">Save Match</button>
 
-      <button type="submit" class="btn-primary">Submit</button>
-    </form>
+</form>
   </div>
 
   <footer>
     <p>© 2025 Athlete Stats Tracker | Designed for sports excellence</p>
   </footer>
 
-  <script src="js/main.js"></script>
+<script>
+document.getElementById("statsForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const data = {
+    sport: document.getElementById("sport").value,
+    team1: document.getElementById("team1").value,
+    team2: document.getElementById("team2").value,
+    score1: document.getElementById("score1").value,
+    score2: document.getElementById("score2").value,
+    match_date: document.getElementById("match_date").value
+  };
+
+  fetch("http://localhost:5000/add-match", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(response => {
+    alert("Match Added Successfully!");
+    document.getElementById("statsForm").reset();
+  })
+  .catch(err => console.log(err));
+});
+</script>
 </body>
 </html>
